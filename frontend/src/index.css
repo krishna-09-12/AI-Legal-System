@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-slate-950 text-slate-100 font-sans antialiased min-h-screen selection:bg-indigo-500 selection:text-white;
+    background-image: 
+      radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
+      radial-gradient(at 50% 0%, hsla(225,39%,10%,1) 0, transparent 50%), 
+      radial-gradient(at 100% 0%, hsla(339,49%,10%,1) 0, transparent 50%);
+    background-attachment: fixed;
+  }
+}
+
+/* Glassmorphism utility classes */
+.glass {
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.glass-hover:hover {
+  background: rgba(15, 23, 42, 0.6);
+  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: 0 10px 30px -10px rgba(99, 102, 241, 0.2);
+}
+
+/* Custom Scrollbar for premium feel */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.3);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.3);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.6);
+}
+
+/* Soundwave animations */
+@keyframes quiet {
+  0%, 100% { height: 4px; }
+  50% { height: 4px; }
+}
+
+@keyframes normal {
+  0%, 100% { height: 10px; }
+  50% { height: 28px; }
+}
+
+@keyframes loud {
+  0%, 100% { height: 15px; }
+  50% { height: 46px; }
+}
+
+.soundwave {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  height: 60px;
+}
+
+.soundwave-bar {
+  width: 4px;
+  background-color: #6366f1;
+  border-radius: 2px;
+  animation-duration: 1.2s;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+
+.soundwave-bar:nth-child(1) { animation-name: quiet; animation-delay: 0.1s; }
+.soundwave-bar:nth-child(2) { animation-name: normal; animation-delay: 0.3s; background-color: #818cf8; }
+.soundwave-bar:nth-child(3) { animation-name: loud; animation-delay: 0.5s; background-color: #a78bfa; }
+.soundwave-bar:nth-child(4) { animation-name: normal; animation-delay: 0.2s; background-color: #818cf8; }
+.soundwave-bar:nth-child(5) { animation-name: quiet; animation-delay: 0.4s; }
+
+/* Pulse Glow */
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 0px rgba(99, 102, 241, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(99, 102, 241, 0);
+  }
+}
+
+.mic-pulse {
+  animation: pulseGlow 2s infinite;
+}

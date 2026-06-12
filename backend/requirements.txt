@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+pymongo[srv]
+joblib
+scikit-learn
+numpy
+openai
+gTTS
+python-multipart
+python-dotenv
+SpeechRecognition
