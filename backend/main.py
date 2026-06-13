@@ -17,7 +17,18 @@ load_dotenv()
 # Import helpers
 from .utils import generate_report
 
-app = FastAPI(title="Aegis AI Legal Assistant Backend")
+app = FastAPI(
+    title="AI Legal System Backend",
+    description="AI-powered FIR Analysis and Legal Assistance Platform",
+    version="1.0.0"
+)
+
+@app.get("/")
+def home():
+    return {
+        "status": "running",
+        "message": "AI Legal System Backend is live"
+    }
 
 # ==============================
 # CORS (Frontend connection)
