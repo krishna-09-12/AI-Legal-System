@@ -117,7 +117,8 @@ def get_records(limit=10):
 # LOAD MODEL PIPELINE
 # ==============================
 try:
-    pipeline = joblib.load("model.pkl")
+    MODEL_PATH = os.path.join(os.path.dirname(__file__), "model.pkl")
+    pipeline = joblib.load(MODEL_PATH)
     print("[SUCCESS] Model pipeline loaded successfully!")
 except Exception as e:
     print(f"[ERROR] Error loading model.pkl: {e}. Please run ml_model.py first.")
@@ -229,7 +230,8 @@ def predict_fir(data: PredictRequest):
     if pipeline is None:
         # Try reloading the model if it wasn't loaded on startup
         try:
-            pipeline = joblib.load("model.pkl")
+            MODEL_PATH = os.path.join(os.path.dirname(__file__), "model.pkl")
+            pipeline = joblib.load(MODEL_PATH)
         except Exception:
             raise HTTPException(status_code=500, detail="ML Model pipeline is not loaded.")
 
