@@ -15,7 +15,7 @@ from gtts import gTTS
 load_dotenv()
 
 # Import helpers
-from utils import generate_report
+from .utils import generate_report
 
 app = FastAPI(title="Aegis AI Legal Assistant Backend")
 
