@@ -3,7 +3,7 @@ uvicorn[standard]
 pymongo[srv]
 dnspython
 joblib
-scikit-learn==1.3.2
+scikit-learn==1.4.2
 numpy
 openai
 gTTS
