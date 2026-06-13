@@ -103,7 +103,7 @@ export default function History({ onSelectReport, refreshTrigger }) {
                   {/* Card Header */}
                   <div className="flex justify-between items-start gap-2">
                     <span className="text-xs font-black text-slate-400 tracking-wider font-mono">
-                      {item.complaint_id || `AEG-REF-${index}`}
+                      {item.complaint_id || `ALS-REF-${index}`}
                     </span>
                     <span className={`text-[10px] px-2 py-0.5 rounded-full font-extrabold uppercase border ${getSeverityBadgeClass(item.severity_level)}`}>
                       {item.severity_level || "Medium"}

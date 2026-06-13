@@ -319,7 +319,7 @@ Incident Description: "{text}"
 
 Generate a structured, professional FIR-like report. Please return a JSON object with the following schema:
 {{
-  "complaint_id": "Generate a unique reference like AEG-2026-XXXX",
+  "complaint_id": "Generate a unique reference like ALS-2026-XXXX",
   "incident_time": "Extract approximate incident time or date",
   "incident_location": "Extract location",
   "victim_details": "Extract victim details",
@@ -364,7 +364,7 @@ Format requirements:
     # Generate unique ID
     import random
     ref_num = random.randint(1000, 9999)
-    complaint_id = f"AEG-2026-{ref_num}"
+    complaint_id = f"ALS-2026-{ref_num}"
     
     return {
         "complaint_id": complaint_id,
