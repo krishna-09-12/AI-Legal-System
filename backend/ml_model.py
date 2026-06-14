@@ -188,8 +188,11 @@ def train_model():
     # Train the pipeline
     pipeline.fit(texts, labels)
 
-    # Save pipeline to model.pkl
-    joblib.dump(pipeline, "model.pkl")
+    # Save pipeline to model.pkl (relative to this script's directory)
+    import os
+    CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+    MODEL_PATH = os.path.join(CURRENT_DIR, "model.pkl")
+    joblib.dump(pipeline, MODEL_PATH)
     print("[SUCCESS] Multilingual complaint classification model (TF-IDF + LR) trained and saved successfully with a realistic 132-sample dataset!")
 
 if __name__ == "__main__":

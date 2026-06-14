@@ -127,12 +127,14 @@ def get_records(limit=10):
 # ==============================
 # LOAD MODEL PIPELINE
 # ==============================
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = os.path.join(CURRENT_DIR, "model.pkl")
+
 try:
-    MODEL_PATH = os.path.join(os.path.dirname(__file__), "model.pkl")
     pipeline = joblib.load(MODEL_PATH)
     print("[SUCCESS] Model pipeline loaded successfully!")
 except Exception as e:
-    print(f"[ERROR] Error loading model.pkl: {e}. Please run ml_model.py first.")
+    print(f"[ERROR] Error loading model.pkl at {MODEL_PATH}: {e}. Please run ml_model.py first.")
     pipeline = None
 
 # ==============================
@@ -241,10 +243,9 @@ def predict_fir(data: PredictRequest):
     if pipeline is None:
         # Try reloading the model if it wasn't loaded on startup
         try:
-            MODEL_PATH = os.path.join(os.path.dirname(__file__), "model.pkl")
             pipeline = joblib.load(MODEL_PATH)
         except Exception:
-            raise HTTPException(status_code=500, detail="ML Model pipeline is not loaded.")
+            raise HTTPException(status_code=500, detail=f"ML Model pipeline is not loaded from {MODEL_PATH}.")
 
     # Predict category
     predicted_category = pipeline.predict([data.text])[0]
