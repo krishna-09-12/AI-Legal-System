@@ -36,6 +36,10 @@ def train_model():
         # ASSAULT (IPC 323/351/324) - 22 samples
         # ==========================================
         ("my neighbor attacked me with a wooden stick during an argument over parking space and injured me", "Assault"),
+        ("someone stabbed a person in front of me with a sharp weapon", "Assault"),
+        ("attempt to murder on a local shopkeeper, he was shot multiple times by gunmen", "Assault"),
+        ("murder occurred in our society last night, a man was killed and found dead in the park", "Assault"),
+        ("usne chaku se peth me hamla kiya aur jaan se maar diya", "Assault"),
         ("a group of unknown boys blocked my path at night and physically beat me up causing head injury", "Assault"),
         ("he slapped me multiple times and punched me in the face during a heated argument in the market", "Assault"),
         ("the delivery boy assaulted my brother at our doorstep causing bleeding from his nose", "Assault"),

@@ -11,7 +11,14 @@ def refine_category_by_keywords(text: str, predicted_category: str) -> str:
     fraud_keywords = ["fraud", "cheat", "scam", "lottery", "otp", "money stolen", "bank account", "bank call", "paise thag", "cheating", "cyber fraud", "scammed"]
     cyber_keywords = ["hack", "compromised", "phishing", "online abuse", "account hack", "instagram", "facebook", "social media", "email hack", "netbanking hack", "hacked"]
     theft_keywords = ["steal", "stolen", "snatch", "thief", "chori", "snatching", "missing bike", "missing phone", "stole"]
-    assault_keywords = ["beat", "assault", "attack", "hit", "fight", "punch", "injury", "injured", "knife", "mara", "peeta", "ladai", "jhagda", "physical fight", "beating"]
+    
+    # Expanded assault keywords to capture extreme violence like murder, shooting, stabbing
+    assault_keywords = [
+        "beat", "assault", "attack", "hit", "fight", "punch", "injury", "injured", "knife", "mara", "peeta", 
+        "ladai", "jhagda", "physical fight", "beating", "stab", "stabbed", "shoot", "shot", "bullet", "kill", 
+        "killed", "murder", "murdered", "death", "blood", "dead", "gunshot", "slapped", "slap", "chaku", "maardiya"
+    ]
+    
     harassment_keywords = ["stalk", "harass", "abuse", "teasing", "abusive", "pareshan", "peecha", "threaten to post", "bad gesture", "stalking", "eve teasing"]
     missing_keywords = ["missing", "lost", "disappeared", "kidnap", "kidnapped", "not return", "not came home", "mil nahi", "gumshuda", "gum ho", "went missing"]
 
@@ -77,11 +84,37 @@ def get_dynamic_ipc_and_remedies(text: str, category: str) -> dict:
             }
             
     elif category == "Assault":
-        if any(w in text_lower for w in ["weapon", "knife", "chaku", "stick", "rod", "danda", "gun", "pistol", "bottle"]):
+        # Check for Murder/Extreme violence first
+        if any(w in text_lower for w in ["murder", "murdered", "kill", "killed", "death", "dead", "jaan se maar"]):
+            return {
+                "ipc": "Section 302 of the Indian Penal Code (IPC) - Murder (Critical, punishable by Death Penalty or Life Imprisonment)",
+                "severity": "Critical",
+                "severity_reason": "Extreme violent crime resulting in loss of human life.",
+                "remedies": [
+                    "Call the emergency response team immediately (dial 112 / 100).",
+                    "Do not touch or disturb the body or the surrounding area to preserve trace forensic evidence.",
+                    "Note down descriptions of all suspects, their escape routes, and vehicle numbers.",
+                    "Identify eye-witnesses and request them to stay for the police inquiry."
+                ]
+            }
+        # Check for Attempt to Murder / Stabbing / Shooting
+        elif any(w in text_lower for w in ["stab", "stabbed", "shoot", "shot", "bullet", "gunshot", "attempt to murder", "chaku", "knife"]):
+            return {
+                "ipc": "Section 307 / 326 of the Indian Penal Code (IPC) - Attempt to Murder & Voluntarily causing grievous hurt by dangerous weapons (Critical, up to 10 years or Life Imprisonment)",
+                "severity": "Critical",
+                "severity_reason": "Severe violent attack with a lethal weapon showing intent to cause death or grievous bodily harm.",
+                "remedies": [
+                    "Call emergency services immediately (dial 112) for police and ambulance dispatch.",
+                    "Administer immediate pressure to control bleeding and rush the victim to the nearest trauma hospital.",
+                    "Do not touch the weapon if it was left at the scene; keep it isolated for forensics.",
+                    "Note down suspect details and secure any local security camera footage immediately."
+                ]
+            }
+        elif any(w in text_lower for w in ["weapon", "stick", "rod", "danda", "gun", "pistol", "bottle"]):
             return {
                 "ipc": "Section 324 / 326 of the Indian Penal Code (IPC) - Voluntarily causing hurt by dangerous weapons (Severe, up to 10 years or life imprisonment)",
                 "severity": "High",
-                "severity_reason": "Assault involving deadly or dangerous weapons, creating high danger to life.",
+                "severity_reason": "Assault involving dangerous weapons, creating high danger to life.",
                 "remedies": [
                     "Seek emergency medical treatment immediately and request a Medico-Legal Certificate (MLC).",
                     "Inform the medical officer that it is an assault case involving a weapon; the hospital will notify the police.",
@@ -89,7 +122,7 @@ def get_dynamic_ipc_and_remedies(text: str, category: str) -> dict:
                     "File an FIR under IPC Section 324/326 immediately."
                 ]
             }
-        elif any(w in text_lower for w in ["threat", "kill", "dhamki", "marn", "threatened"]):
+        elif any(w in text_lower for w in ["threat", "dhamki", "marn", "threatened"]):
             return {
                 "ipc": "Section 323 / 506 of the Indian Penal Code (IPC) - Voluntarily causing hurt & Criminal Intimidation",
                 "severity": "High",
@@ -319,14 +352,14 @@ Incident Description: "{text}"
 
 Generate a structured, professional FIR-like report. Please return a JSON object with the following schema:
 {{
-  "complaint_id": "Generate a unique reference like ALS-2026-XXXX",
+  "complaint_id": "Generate a unique reference like AEG-2026-XXXX",
   "incident_time": "Extract approximate incident time or date",
   "incident_location": "Extract location",
   "victim_details": "Extract victim details",
   "suspect_details": "Extract suspect details",
   "report_summary": "A formal, structured description of the incident in clear language",
   "ipc_sections": "Relevant IPC or IT Act sections applicable to this specific complaint",
-  "severity_level": "Low, Medium, or High",
+  "severity_level": "Low, Medium, High, or Critical",
   "severity_reason": "Brief explanation of the severity rating",
   "suggested_actions": [
      "List 3-4 highly specific, actionable legal remedies or steps the user must take next"
@@ -364,7 +397,7 @@ Format requirements:
     # Generate unique ID
     import random
     ref_num = random.randint(1000, 9999)
-    complaint_id = f"ALS-2026-{ref_num}"
+    complaint_id = f"AEG-2026-{ref_num}"
     
     return {
         "complaint_id": complaint_id,
