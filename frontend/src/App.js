@@ -1,18 +1,64 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import FIRForm from "./components/FIRForm";
 import History from "./components/History";
+import LandingPage from "./components/LandingPage";
+import AuthModal from "./components/AuthModal";
+import ProfileModal from "./components/ProfileModal";
+import { LogOut, User as UserIcon } from "lucide-react";
+import { getMe } from "./lib/api";
 
 function App() {
+  const [user, setUser] = useState(null);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [authMode, setAuthMode] = useState("login");
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [selectedReport, setSelectedReport] = useState(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
+  // Load user profile on startup if token exists
+  useEffect(() => {
+    const token = localStorage.getItem("als_auth_token");
+    if (token) {
+      getMe()
+        .then((data) => {
+          setUser(data);
+        })
+        .catch(() => {
+          // Clean up stale or expired tokens
+          localStorage.removeItem("als_auth_token");
+          setUser(null);
+        });
+    }
+  }, []);
+
   const handleNewReport = (report) => {
-    // Bump refresh trigger to tell History component to re-fetch MongoDB
+    // Bump refresh trigger to tell History component to re-fetch complaints
     setRefreshTrigger((prev) => prev + 1);
   };
 
+  const handleAuthSuccess = (token, userInfo) => {
+    localStorage.setItem("als_auth_token", token);
+    setUser(userInfo);
+    setIsAuthOpen(false);
+    // Reload history log for the newly authenticated user
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("als_auth_token");
+    setUser(null);
+    setSelectedReport(null);
+    // Reload history log (reverts to guest history)
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
+  const openAuth = (mode) => {
+    setAuthMode(mode);
+    setIsAuthOpen(true);
+  };
+
   return (
-    <div className="min-h-screen flex flex-col justify-between">
+    <div className="min-h-screen flex flex-col justify-between bg-slate-950 text-white">
       
       {/* Premium Header */}
       <header className="border-b border-slate-900/80 bg-slate-950/20 backdrop-blur-md sticky top-0 z-50">
@@ -31,23 +77,81 @@ function App() {
             </div>
           </div>
           
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-ping" />
-            <span className="text-xs text-slate-400 font-bold uppercase tracking-wider hidden sm:inline">
-              Secure Cloud Processing (IPC)
-            </span>
+          {/* Header Action Controls */}
+          <div className="flex items-center gap-4 font-bold uppercase tracking-wider text-xs">
+            {user ? (
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setIsProfileOpen(true)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 transition-colors duration-150"
+                  title="Click to edit profile settings"
+                >
+                  <UserIcon className="w-3.5 h-3.5 text-indigo-400" />
+                  <span className="hidden sm:inline font-semibold">{user.full_name}</span>
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-850 hover:bg-rose-500/10 hover:text-rose-400 transition-colors"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Sign Out</span>
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => openAuth("login")}
+                  className="text-slate-300 hover:text-white transition-colors"
+                >
+                  Sign in
+                </button>
+                <button
+                  onClick={() => openAuth("signup")}
+                  className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white px-4 py-2 rounded-xl transition-all shadow-lg shadow-indigo-600/10"
+                >
+                  Sign up
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-grow py-6">
-        {/* Core FIR voice form */}
-        <FIRForm onNewReport={handleNewReport} selectedReport={selectedReport} />
+      <main className="flex-grow">
+        {user ? (
+          <div className="py-6 animate-in fade-in duration-300">
+            {/* Core FIR voice form */}
+            <FIRForm onNewReport={handleNewReport} selectedReport={selectedReport} />
 
-        {/* History registry log */}
-        <History onSelectReport={setSelectedReport} refreshTrigger={refreshTrigger} />
+            {/* History registry log */}
+            <History onSelectReport={setSelectedReport} refreshTrigger={refreshTrigger} />
+          </div>
+        ) : (
+          <LandingPage onGetStarted={() => openAuth("signup")} />
+        )}
       </main>
+
+      {/* Auth Modal Overlay */}
+      <AuthModal
+        isOpen={isAuthOpen}
+        onClose={() => setIsAuthOpen(false)}
+        initialMode={authMode}
+        onAuthSuccess={handleAuthSuccess}
+      />
+
+      {/* Profile Modal Overlay */}
+      {user && (
+        <ProfileModal
+          isOpen={isProfileOpen}
+          onClose={() => setIsProfileOpen(false)}
+          user={user}
+          onUpdateSuccess={(token, updatedUser) => {
+            localStorage.setItem("als_auth_token", token);
+            setUser(updatedUser);
+          }}
+        />
+      )}
 
       {/* Premium Footer */}
       <footer className="border-t border-slate-900/80 bg-slate-950/40 py-6 text-center text-xs text-slate-500 font-bold uppercase tracking-wider">

@@ -12,3 +12,5 @@ gTTS
 python-multipart
 python-dotenv
 SpeechRecognition
+bcrypt
+pyjwt
