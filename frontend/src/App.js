@@ -23,7 +23,7 @@ function App() {
             </div>
             <div>
               <h1 className="text-lg font-black tracking-tight text-white uppercase sm:text-xl">
-                Aegis <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Legal Voice AI</span>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">AI Legal System</span>
               </h1>
               <p className="text-[10px] text-slate-500 font-extrabold uppercase tracking-wider">
                 AI Voice Complaint & Jurisdiction Assistant
@@ -52,7 +52,7 @@ function App() {
       {/* Premium Footer */}
       <footer className="border-t border-slate-900/80 bg-slate-950/40 py-6 text-center text-xs text-slate-500 font-bold uppercase tracking-wider">
         <div className="max-w-7xl mx-auto px-4">
-          <p>© 2026 Aegis AI. Developed under the Indian Penal Code Jurisprudence. All rights reserved.</p>
+          <p>© 2026 AI Legal System. Developed under the Indian Penal Code Jurisprudence. All rights reserved.</p>
         </div>
       </footer>
       

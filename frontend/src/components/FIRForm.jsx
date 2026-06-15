@@ -447,7 +447,7 @@ export default function FIRForm({ onNewReport, selectedReport }) {
             <div className="mt-6 flex flex-wrap gap-4 items-center justify-between p-4 bg-indigo-950/20 border border-indigo-500/20 rounded-2xl">
               <div className="flex items-center gap-2">
                 <Volume2 className="w-5 h-5 text-indigo-400" />
-                <span className="text-xs font-bold text-indigo-300 uppercase tracking-wider">Aegis Voice Assistance Readout</span>
+                <span className="text-xs font-bold text-indigo-300 uppercase tracking-wider">AI Legal System Voice Readout</span>
               </div>
               
               <div className="flex gap-2">

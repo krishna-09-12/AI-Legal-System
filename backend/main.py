@@ -15,7 +15,10 @@ from gtts import gTTS
 load_dotenv()
 
 # Import helpers
-from .utils import generate_report
+try:
+    from utils import generate_report
+except ImportError:
+    from .utils import generate_report
 
 app = FastAPI(
     title="AI Legal System Backend",
