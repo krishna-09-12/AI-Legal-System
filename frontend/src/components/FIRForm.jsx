@@ -31,6 +31,17 @@ export default function FIRForm({ onNewReport, selectedReport }) {
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const audioRef = useRef(null);
+  
+  // Browser Speech Recognition refs & state
+  const recognitionRef = useRef(null);
+  const [isBrowserSpeechSupported, setIsBrowserSpeechSupported] = useState(false);
+
+  useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      setIsBrowserSpeechSupported(true);
+    }
+  }, []);
 
   // Stop audio playback when a new report is generated
   useEffect(() => {
@@ -43,6 +54,46 @@ export default function FIRForm({ onNewReport, selectedReport }) {
 
   // Handle Voice Recording Toggle
   const startRecording = async () => {
+    // Primary: Browser-based Speech Recognition (free, fast, no server dependency)
+    if (isBrowserSpeechSupported) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      recognitionRef.current = recognition;
+      
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = language === "hi" ? "hi-IN" : "en-IN";
+
+      recognition.onresult = (event) => {
+        let resultText = "";
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            resultText += event.results[i][0].transcript;
+          }
+        }
+        if (resultText) {
+          setText((prev) => (prev ? `${prev.trim()} ${resultText.trim()}` : resultText.trim()));
+        }
+      };
+
+      recognition.onerror = (err) => {
+        console.error("Speech Recognition Error:", err);
+      };
+
+      recognition.onend = () => {
+        setIsRecording(false);
+      };
+
+      try {
+        recognition.start();
+        setIsRecording(true);
+      } catch (err) {
+        console.error("Failed to start speech recognition:", err);
+      }
+      return;
+    }
+
+    // Fallback: MediaRecorder upload to backend (requires server-side Whisper or FFmpeg setup)
     audioChunksRef.current = [];
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -58,8 +109,6 @@ export default function FIRForm({ onNewReport, selectedReport }) {
       mediaRecorder.onstop = async () => {
         const audioBlob = new Blob(audioChunksRef.current, { type: "audio/wav" });
         await handleAudioUpload(audioBlob);
-        
-        // Stop all tracks in stream to release microphone
         stream.getTracks().forEach((track) => track.stop());
       };
 
@@ -72,6 +121,12 @@ export default function FIRForm({ onNewReport, selectedReport }) {
   };
 
   const stopRecording = () => {
+    if (isBrowserSpeechSupported && recognitionRef.current) {
+      recognitionRef.current.stop();
+      setIsRecording(false);
+      return;
+    }
+
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
