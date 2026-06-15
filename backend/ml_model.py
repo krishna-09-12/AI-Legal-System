@@ -4,10 +4,115 @@ from sklearn.pipeline import Pipeline
 import joblib
 
 def train_model():
-    # Extensive, high-quality dataset of realistic Indian legal complaints (English, Hindi, Hinglish)
+    # Expanded dataset combining simulated multilingual corpus with clean, essential real-world FIR records
     dataset = [
         # ==========================================
-        # THEFT (IPC 379/380) - 22 samples
+        # REAL-WORLD FIR SAMPLES (Simplified & Essential)
+        # ==========================================
+        ("accident on national highway, multiple people injured under section 279 337 338", "Assault"),
+        ("fatal vehicle accident on road near bus stand, victim died under section 279 304A", "Assault"),
+        ("illegal theft of sand from the river bed under section 379 and mmdr act", "Theft"),
+        ("accident on state highway road under section 279 338", "Assault"),
+        ("theft of property and vehicles on road under section 279 337 338", "Theft"),
+        ("fatal motor accident on road under section 279 337 338 304A", "Assault"),
+        ("cruelty, verbal abuse and domestic harassment by husband and relatives under section 498A 504 149", "Harassment"),
+        ("attempt to murder and physical assault with dangerous weapons at farm house under section 326 307", "Assault"),
+        ("cheating and financial fraud at public place under section 420", "Fraud"),
+        ("fatal motor vehicle accident on road under section 279 304A", "Assault"),
+        ("molestation, physical attack and stalking in public place under section 354 323 324 506", "Harassment"),
+        ("pocso case, kidnapping and sexual harassment of minor child under section 354 506 354A", "Harassment"),
+        ("missing person report, a woman went missing from bus stand area", "Missing Person"),
+        ("molestation of woman at house under section 324 323 149 147 504 506 354B", "Harassment"),
+        ("forgery of document, impersonation and cheating under section 468 465 419", "Fraud"),
+        ("fatal vehicle accident on state highway under section 279 337 338 304A", "Assault"),
+        ("theft of cattle from cow shed under section 379", "Theft"),
+        ("murder of a person at house due to jealousy under section 302", "Assault"),
+        ("theft of two wheeler automobile motorcycle from bus stand parking area under section 379", "Theft"),
+        ("kidnapping and abduction of a person at petrol pump under section 366", "Missing Person"),
+        ("accident on state highway road under section 279 337 338", "Assault"),
+
+        # ==========================================
+        ('pocso case, kidnapping and sexual harassment of minor child at kamatagi bus stand under section 12, 306,363, 18', 'Harassment'),
+        ('fatal vehicle accident at bagalkot to aminagad sh-20 road near chapi field under section 338,337,279', 'Assault'),
+        ('fatal vehicle accident at amblikoppa bus stand under section 304(A),279', 'Assault'),
+        ('fatal vehicle accident at aminagad bagalkot sh 20 road near kabbin kani under section 338,279', 'Assault'),
+        ('theft of property at middle of aihole kaligudd village malaprabha river under section 379, 21,4(1A),4(1)', 'Theft'),
+        ('fatal vehicle accident at ilal vadageri road near vadageri school under section 338,337,283,279, 196,181,3,146', 'Assault'),
+        ('fatal vehicle accident at gudur bus stand under section 279,337,338,304(A)', 'Assault'),
+        ('cruelty, verbal abuse and domestic harassment by husband at kalur village accused house under section 149,504,498A,494, 6,5,4', 'Harassment'),
+        ('murder of a person at ilal village accused farm house under section 326,307', 'Assault'),
+        ('financial fraud at gudur bus stand public place under section 420, 78(III)', 'Fraud'),
+        ('fatal vehicle accident at gudur to muradi road gurupadayya kvati fileid nea under section 304(A),279, 181,3', 'Assault'),
+        ('fatal vehicle accident at chillapur village tippanna sudi in front house under section 304(A),338,337,279, 181,3', 'Assault'),
+        ('fatal vehicle accident at amd to hnd sh-20 road pattanasetti pump near under section 304(A),279', 'Assault'),
+        ('molestation and physical attack of woman at infront of complainant house hulaginal village under section 324,323,504,506,354(B)', 'Harassment'),
+        ('pocso case, kidnapping and sexual harassment of minor child at huvinahalli village accused house roof under section 354,506,354(A), 8,18, 511', 'Harassment'),
+        ('fatal vehicle accident at badami to gudur road near bhimanagad village under section 338,337,279, 196,181,3,146', 'Assault'),
+        ('theft of property at benal village basanagouda goudar filied under section 379, 21,4(1A),4(1)', 'Theft'),
+        ('missing person report, a person went missing from aminagada bus stand', 'Missing Person'),
+        ('molestation and physical attack of woman at victem and accused land nimbalagundi village area under section 324,323,149,148,147,504,341,506,354(B),342', 'Harassment'),
+        ('physical assault causing injury at nimbalgundi village area nagappa kendur land under section 323,504,506', 'Assault'),
+        ('molestation and physical attack of woman at complainant in house hiremagi village under section 324,323,447,149,504,506,354(B)', 'Harassment'),
+        ('molestation and physical attack of woman at complainant in house hiremagi village under section 324,323,447,149,147,143,504,506,354(B)', 'Harassment'),
+        ('pocso case, kidnapping and sexual harassment of minor child at basu ilal field k.kallapur under section 8,4, 376(2)(I),109,147,366(A),149,363,366, 6', 'Harassment'),
+        ('forgery of document and cheating at aminagad bus stand under section 468,465,419', 'Fraud'),
+        ('fatal vehicle accident at aminagad bagalkot sh -20 road near banathikoll under section 279, 187', 'Assault'),
+        ('fatal vehicle accident at aminagad near kuri bazar under section 304(A),279, 196,181,3,146', 'Assault'),
+        ('fatal vehicle accident at aihole to pattadakal on road chillapur crass near under section 279', 'Assault'),
+        ('fatal vehicle accident at hungunad to aminagad sh-20 road near granete fract under section 304(A),338,337,279', 'Assault'),
+        ('harassment at rakkasagi village harijan keri banikatti near under section 354,323,468,504,34,506, 3(1)(11),3(1)(10)', 'Harassment'),
+        ('fatal vehicle accident at aminagad to sulebavi road near tatrani dhaba under section 338,337,279, 196,146', 'Assault'),
+        ('fatal vehicle accident at muradi to gudur on road near milk diary muradi under section 338,337,279,304(A)', 'Assault'),
+        ('missing person report, a person went missing from complainant house in aihole village', 'Missing Person'),
+        ('fatal vehicle accident at bagalkot aminagad sh-20 road near kamatagi 2 km under section 338,337,279, 196,181,3,146', 'Assault'),
+        ('missing person report, a person went missing from kamatagi village complainant house', 'Missing Person'),
+        ('fatal vehicle accident at gudur aminagad road near kanibasappa tempal under section 279,337,338,304(A), 196,181,3,146', 'Assault'),
+        ('fatal vehicle accident at sh-20 road rakkasagi village bridge under section 279,337,338,304(A), 196,181,3,146', 'Assault'),
+        ('murder of a person at benal kamatagi road near accused land under section 307,34', 'Assault'),
+        ('theft at commercial place at gudur village complainant kirani shop under section 457,380', 'Theft'),
+        ('fatal vehicle accident at sh-20 road ramathal-benal cross under section 338,337,279', 'Assault'),
+        ('fatal vehicle accident at aminagad hunagund sh-20 road near kuri bazar under section 338,337,279, 196,181,3,146', 'Assault'),
+        ('molestation and physical attack of woman at ilal village in complainant house under section 324,323,452,504,506,354(B)', 'Harassment'),
+        ('fatal vehicle accident at aminagad sulebavi road near nav chetan school under section 338,279, 187', 'Assault'),
+        ('fatal vehicle accident at kamatagi road smashan near under section 279,337,338,304(A)', 'Assault'),
+        ('murder of a person at muradi village sangappa akki land under section 307,504,34,323', 'Assault'),
+        ('physical assault causing injury at gudur muradi road akki land near under section 324,504,34,506', 'Assault'),
+        ('fatal vehicle accident at bagalkot aminagad sh-20 road near kamatagi bridge under section 279,337,338,304(A)', 'Assault'),
+        ('fatal vehicle accident at hulaginal hiremagi road ghanamtteshwar dhwarbagila under section 304(A),279', 'Assault'),
+        ('forgery of document and cheating at kelur village pkps bank under section 417,465,420,34,197', 'Fraud'),
+        ('missing person report, a person went missing from aihole village complainent house', 'Missing Person'),
+        ('fatal vehicle accident at aminagad sulebavi road near navachetan school under section 279,337,338,304(A), 196,181,3,146', 'Assault'),
+        ('theft of property at aminagad near hadi basavanna temple under section 379, 21,4(1A),4(1)', 'Theft'),
+        ('road accident and injury at aihole village near govt.shcool under section 338', 'Assault'),
+        ('theft of cattle at gudur village complainent danad kottige under section 379', 'Theft'),
+        ('fatal vehicle accident at aminagad bagalkot sh-20 road ramathal brigde on under section 338,279, 187', 'Assault'),
+        ('murder of a person at maradibhudihal village deceased house under section 302', 'Assault'),
+        ('molestation and physical attack of woman at ramathal village accused house under section 323,34,506,354(B)', 'Harassment'),
+        ('pocso case, kidnapping and sexual harassment of minor child at aminagada town complainant near by house under section 366,376(2)(n), 4,6,10, 376(2)(I),366(A),363,376(2)', 'Harassment'),
+        ('assault at ramatahal village in complainant house under section 323,452,149,147,143,504,506,354(B)', 'Assault'),
+        ('fatal vehicle accident at amd hnd sh 20 road near sangameshwar granite facto under section 304(A),337,279,338', 'Assault'),
+        ('theft of property at gudur hanamanal road nilugal cross under section 379, 21,4(1A),4(1)', 'Theft'),
+        ('theft of property at muganur hanuman temple under section 379,511', 'Theft'),
+        ('theft of property at ramathal forest nursury on the road ihole to ramat under section 379, 21,4(1A),4(1)', 'Theft'),
+        ('assault at mullur village complainant house near under section 324,323,149,147,143,504', 'Assault'),
+        ('assault at mullur village complainant land near under section 324,323,149,147,143,504', 'Assault'),
+        ('fatal vehicle accident at kamatagi guledagudda road near makandar land under section 304(A),279', 'Assault'),
+        ('fatal vehicle accident at hunagund aminagad sh-20 road near rakkasagi villag under section 279,283,337,338', 'Assault'),
+        ('theft of property at kelur village siddanakolla math crass near under section 379, 21,4(1A),4(1)', 'Theft'),
+        ('cruelty, verbal abuse and domestic harassment by husband at gudur village complainant house under section 506(2),504,498A', 'Harassment'),
+        ('pocso case, kidnapping and sexual harassment of minor child at tallikeri village complainant house under section 8, 354(A),511,376,354', 'Harassment'),
+        ('theft of two wheeler vehicle at aminagadbus stand near insapecton benlow under section 379', 'Theft'),
+        ('kidnapping and abduction of a person, a person went missing from gudur village mohansa patil petrole pump under section 366', 'Missing Person'),
+        ('theft of property at aminagad pattan pachayati near idea taver under section 379', 'Theft'),
+        ('missing person report, a person went missing from vadageri village victem house', 'Missing Person'),
+        ('fatal vehicle accident at aminagad bagalkot sh-20 road near doddannavar mine under section 279', 'Assault'),
+        ('fatal vehicle accident at amd bgk sh 20 road near taz mahal hotel under section 279', 'Assault'),
+        ('physical assault causing injury at nimbalagund complainant land under section 324,323,504,506', 'Assault'),
+        ('missing person report, a person went missing from muganur village victem house', 'Missing Person'),
+        ('assault at gudur bustand under section 149,143,341,353,283', 'Assault'),
+        ('fatal vehicle accident at amingad bagalkot sh-20 road near tippanna gouda under section 338,337,279,429, 187', 'Assault'),
+
+# THEFT (IPC 379/380)
         # ==========================================
         ("my mobile phone was stolen from my pocket while boarding the crowded metro train", "Theft"),
         ("someone stole my motorcycle from the office parking lot between 10 AM and 6 PM", "Theft"),
@@ -33,7 +138,7 @@ def train_model():
         ("someone stole my purse containing expensive cosmetic items and cash from the restaurant table", "Theft"),
 
         # ==========================================
-        # ASSAULT (IPC 323/351/324) - 22 samples
+        # ASSAULT (IPC 323/351/324/302/307)
         # ==========================================
         ("my neighbor attacked me with a wooden stick during an argument over parking space and injured me", "Assault"),
         ("someone stabbed a person in front of me with a sharp weapon", "Assault"),
@@ -63,7 +168,7 @@ def train_model():
         ("physically beaten and kicked by three men in a public park this evening", "Assault"),
 
         # ==========================================
-        # FRAUD (IPC 420) - 22 samples
+        # FRAUD (IPC 420)
         # ==========================================
         ("I was cheated of two lakh rupees by a fake online job portal that promised work in Canada", "Fraud"),
         ("a caller pretending to be from my bank asked for my otp and transferred money from my account", "Fraud"),
@@ -89,7 +194,7 @@ def train_model():
         ("cheating and forgery in distribution of wealth using a fake signature on the will document", "Fraud"),
 
         # ==========================================
-        # HARASSMENT (IPC 354/509/506) - 22 samples
+        # HARASSMENT (IPC 354/509/506/498A)
         # ==========================================
         ("an unknown boy is stalking me outside my college gate every day and making vulgar gestures", "Harassment"),
         ("I am receiving abusive messages and obscene photos from a number on my personal WhatsApp", "Harassment"),
@@ -115,7 +220,7 @@ def train_model():
         ("stalking and sending threat messages to post personal information on social groups", "Harassment"),
 
         # ==========================================
-        # CYBERCRIME (IT Act Sec 66/66D) - 22 samples
+        # CYBERCRIME (IT Act Sec 66/66D)
         # ==========================================
         ("someone hacked my instagram account and is sending spam links and fake investment messages to my followers", "Cybercrime"),
         ("my official email ID has been hacked and the password was changed without my authorization", "Cybercrime"),
@@ -141,7 +246,7 @@ def train_model():
         ("unauthorized login attempts from international IP addresses on my corporate cloud storage", "Cybercrime"),
 
         # ==========================================
-        # MISSING PERSON (Section 363) - 22 samples
+        # MISSING PERSON (Section 363)
         # ==========================================
         ("my 10 year old son went to the nearby grocery shop at 4 PM and has not returned home since", "Missing Person"),
         ("my grandfather who suffers from dementia went missing from home during his morning walk", "Missing Person"),
@@ -172,8 +277,6 @@ def train_model():
     labels = [item[1] for item in dataset]
 
     # Build Pipeline containing TfidfVectorizer and LogisticRegression
-    # Using word and char_wb n-grams for robust spelling / Hinglish handling
-    # max_df=0.9 and sublinear_tf=True help handle common filler words better
     pipeline = Pipeline([
         ('tfidf', TfidfVectorizer(
             ngram_range=(1, 2), 
@@ -182,8 +285,8 @@ def train_model():
             sublinear_tf=True
         )),
         ('clf', LogisticRegression(
-            C=2.0, 
-            max_iter=2000, 
+            C=2.5, 
+            max_iter=3000, 
             class_weight='balanced',
             solver='lbfgs'
         ))
@@ -197,7 +300,7 @@ def train_model():
     CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
     MODEL_PATH = os.path.join(CURRENT_DIR, "model.pkl")
     joblib.dump(pipeline, MODEL_PATH)
-    print("[SUCCESS] Multilingual complaint classification model (TF-IDF + LR) trained and saved successfully with a realistic 132-sample dataset!")
+    print(f"[SUCCESS] Multilingual complaint classification model trained with a dataset of {len(dataset)} samples!")
 
 if __name__ == "__main__":
     train_model()
