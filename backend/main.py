@@ -48,24 +48,26 @@ app.add_middleware(
 # DATABASE CONNECTION & FALLBACK
 # ==============================
 MONGO_URI = os.getenv("MONGO_URI")
-
-if not MONGO_URI:
-    raise Exception("MONGO_URI environment variable is not set")
 db_mode = "mongodb"
 collection = None
 import json
 
-try:
-    # Set connection timeout to 2 seconds to fail fast if DNS or internet is down
-    client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=2000)
-    # Trigger connection check
-    client.admin.command('ping')
-    db = client["fir_database"]
-    collection = db["fir_records"]
-    print("[SUCCESS] Connected to MongoDB Atlas!")
-except Exception as db_init_err:
-    print(f"[WARNING] MongoDB Atlas connection failed: {db_init_err}. Falling back to local storage (local_history.json).")
+if not MONGO_URI:
+    print("[WARNING] MONGO_URI environment variable is not set. Falling back to local storage (local_history.json).")
     db_mode = "local"
+
+if db_mode == "mongodb":
+    try:
+        # Set connection timeout to 2 seconds to fail fast if DNS or internet is down
+        client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=2000)
+        # Trigger connection check
+        client.admin.command('ping')
+        db = client["fir_database"]
+        collection = db["fir_records"]
+        print("[SUCCESS] Connected to MongoDB Atlas!")
+    except Exception as db_init_err:
+        print(f"[WARNING] MongoDB Atlas connection failed: {db_init_err}. Falling back to local storage (local_history.json).")
+        db_mode = "local"
 
 LOCAL_DB_PATH = "local_history.json"
 
