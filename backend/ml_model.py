@@ -4,115 +4,10 @@ from sklearn.pipeline import Pipeline
 import joblib
 
 def train_model():
-    # Expanded dataset combining simulated multilingual corpus with clean, essential real-world FIR records
+    # 1. Hardcoded Baseline Dataset (Simulated Multilingual Hinglish/English corpus)
     dataset = [
-        # ==========================================
-        # REAL-WORLD FIR SAMPLES (Simplified & Essential)
-        # ==========================================
-        ("accident on national highway, multiple people injured under section 279 337 338", "Assault"),
-        ("fatal vehicle accident on road near bus stand, victim died under section 279 304A", "Assault"),
-        ("illegal theft of sand from the river bed under section 379 and mmdr act", "Theft"),
-        ("accident on state highway road under section 279 338", "Assault"),
-        ("theft of property and vehicles on road under section 279 337 338", "Theft"),
-        ("fatal motor accident on road under section 279 337 338 304A", "Assault"),
-        ("cruelty, verbal abuse and domestic harassment by husband and relatives under section 498A 504 149", "Harassment"),
-        ("attempt to murder and physical assault with dangerous weapons at farm house under section 326 307", "Assault"),
-        ("cheating and financial fraud at public place under section 420", "Fraud"),
-        ("fatal motor vehicle accident on road under section 279 304A", "Assault"),
-        ("molestation, physical attack and stalking in public place under section 354 323 324 506", "Harassment"),
-        ("pocso case, kidnapping and sexual harassment of minor child under section 354 506 354A", "Harassment"),
-        ("missing person report, a woman went missing from bus stand area", "Missing Person"),
-        ("molestation of woman at house under section 324 323 149 147 504 506 354B", "Harassment"),
-        ("forgery of document, impersonation and cheating under section 468 465 419", "Fraud"),
-        ("fatal vehicle accident on state highway under section 279 337 338 304A", "Assault"),
-        ("theft of cattle from cow shed under section 379", "Theft"),
-        ("murder of a person at house due to jealousy under section 302", "Assault"),
-        ("theft of two wheeler automobile motorcycle from bus stand parking area under section 379", "Theft"),
-        ("kidnapping and abduction of a person at petrol pump under section 366", "Missing Person"),
-        ("accident on state highway road under section 279 337 338", "Assault"),
-
-        # ==========================================
-        ('pocso case, kidnapping and sexual harassment of minor child at kamatagi bus stand under section 12, 306,363, 18', 'Harassment'),
-        ('fatal vehicle accident at bagalkot to aminagad sh-20 road near chapi field under section 338,337,279', 'Assault'),
-        ('fatal vehicle accident at amblikoppa bus stand under section 304(A),279', 'Assault'),
-        ('fatal vehicle accident at aminagad bagalkot sh 20 road near kabbin kani under section 338,279', 'Assault'),
-        ('theft of property at middle of aihole kaligudd village malaprabha river under section 379, 21,4(1A),4(1)', 'Theft'),
-        ('fatal vehicle accident at ilal vadageri road near vadageri school under section 338,337,283,279, 196,181,3,146', 'Assault'),
-        ('fatal vehicle accident at gudur bus stand under section 279,337,338,304(A)', 'Assault'),
-        ('cruelty, verbal abuse and domestic harassment by husband at kalur village accused house under section 149,504,498A,494, 6,5,4', 'Harassment'),
-        ('murder of a person at ilal village accused farm house under section 326,307', 'Assault'),
-        ('financial fraud at gudur bus stand public place under section 420, 78(III)', 'Fraud'),
-        ('fatal vehicle accident at gudur to muradi road gurupadayya kvati fileid nea under section 304(A),279, 181,3', 'Assault'),
-        ('fatal vehicle accident at chillapur village tippanna sudi in front house under section 304(A),338,337,279, 181,3', 'Assault'),
-        ('fatal vehicle accident at amd to hnd sh-20 road pattanasetti pump near under section 304(A),279', 'Assault'),
-        ('molestation and physical attack of woman at infront of complainant house hulaginal village under section 324,323,504,506,354(B)', 'Harassment'),
-        ('pocso case, kidnapping and sexual harassment of minor child at huvinahalli village accused house roof under section 354,506,354(A), 8,18, 511', 'Harassment'),
-        ('fatal vehicle accident at badami to gudur road near bhimanagad village under section 338,337,279, 196,181,3,146', 'Assault'),
-        ('theft of property at benal village basanagouda goudar filied under section 379, 21,4(1A),4(1)', 'Theft'),
-        ('missing person report, a person went missing from aminagada bus stand', 'Missing Person'),
-        ('molestation and physical attack of woman at victem and accused land nimbalagundi village area under section 324,323,149,148,147,504,341,506,354(B),342', 'Harassment'),
-        ('physical assault causing injury at nimbalgundi village area nagappa kendur land under section 323,504,506', 'Assault'),
-        ('molestation and physical attack of woman at complainant in house hiremagi village under section 324,323,447,149,504,506,354(B)', 'Harassment'),
-        ('molestation and physical attack of woman at complainant in house hiremagi village under section 324,323,447,149,147,143,504,506,354(B)', 'Harassment'),
-        ('pocso case, kidnapping and sexual harassment of minor child at basu ilal field k.kallapur under section 8,4, 376(2)(I),109,147,366(A),149,363,366, 6', 'Harassment'),
-        ('forgery of document and cheating at aminagad bus stand under section 468,465,419', 'Fraud'),
-        ('fatal vehicle accident at aminagad bagalkot sh -20 road near banathikoll under section 279, 187', 'Assault'),
-        ('fatal vehicle accident at aminagad near kuri bazar under section 304(A),279, 196,181,3,146', 'Assault'),
-        ('fatal vehicle accident at aihole to pattadakal on road chillapur crass near under section 279', 'Assault'),
-        ('fatal vehicle accident at hungunad to aminagad sh-20 road near granete fract under section 304(A),338,337,279', 'Assault'),
-        ('harassment at rakkasagi village harijan keri banikatti near under section 354,323,468,504,34,506, 3(1)(11),3(1)(10)', 'Harassment'),
-        ('fatal vehicle accident at aminagad to sulebavi road near tatrani dhaba under section 338,337,279, 196,146', 'Assault'),
-        ('fatal vehicle accident at muradi to gudur on road near milk diary muradi under section 338,337,279,304(A)', 'Assault'),
-        ('missing person report, a person went missing from complainant house in aihole village', 'Missing Person'),
-        ('fatal vehicle accident at bagalkot aminagad sh-20 road near kamatagi 2 km under section 338,337,279, 196,181,3,146', 'Assault'),
-        ('missing person report, a person went missing from kamatagi village complainant house', 'Missing Person'),
-        ('fatal vehicle accident at gudur aminagad road near kanibasappa tempal under section 279,337,338,304(A), 196,181,3,146', 'Assault'),
-        ('fatal vehicle accident at sh-20 road rakkasagi village bridge under section 279,337,338,304(A), 196,181,3,146', 'Assault'),
-        ('murder of a person at benal kamatagi road near accused land under section 307,34', 'Assault'),
-        ('theft at commercial place at gudur village complainant kirani shop under section 457,380', 'Theft'),
-        ('fatal vehicle accident at sh-20 road ramathal-benal cross under section 338,337,279', 'Assault'),
-        ('fatal vehicle accident at aminagad hunagund sh-20 road near kuri bazar under section 338,337,279, 196,181,3,146', 'Assault'),
-        ('molestation and physical attack of woman at ilal village in complainant house under section 324,323,452,504,506,354(B)', 'Harassment'),
-        ('fatal vehicle accident at aminagad sulebavi road near nav chetan school under section 338,279, 187', 'Assault'),
-        ('fatal vehicle accident at kamatagi road smashan near under section 279,337,338,304(A)', 'Assault'),
-        ('murder of a person at muradi village sangappa akki land under section 307,504,34,323', 'Assault'),
-        ('physical assault causing injury at gudur muradi road akki land near under section 324,504,34,506', 'Assault'),
-        ('fatal vehicle accident at bagalkot aminagad sh-20 road near kamatagi bridge under section 279,337,338,304(A)', 'Assault'),
-        ('fatal vehicle accident at hulaginal hiremagi road ghanamtteshwar dhwarbagila under section 304(A),279', 'Assault'),
-        ('forgery of document and cheating at kelur village pkps bank under section 417,465,420,34,197', 'Fraud'),
-        ('missing person report, a person went missing from aihole village complainent house', 'Missing Person'),
-        ('fatal vehicle accident at aminagad sulebavi road near navachetan school under section 279,337,338,304(A), 196,181,3,146', 'Assault'),
-        ('theft of property at aminagad near hadi basavanna temple under section 379, 21,4(1A),4(1)', 'Theft'),
-        ('road accident and injury at aihole village near govt.shcool under section 338', 'Assault'),
-        ('theft of cattle at gudur village complainent danad kottige under section 379', 'Theft'),
-        ('fatal vehicle accident at aminagad bagalkot sh-20 road ramathal brigde on under section 338,279, 187', 'Assault'),
-        ('murder of a person at maradibhudihal village deceased house under section 302', 'Assault'),
-        ('molestation and physical attack of woman at ramathal village accused house under section 323,34,506,354(B)', 'Harassment'),
-        ('pocso case, kidnapping and sexual harassment of minor child at aminagada town complainant near by house under section 366,376(2)(n), 4,6,10, 376(2)(I),366(A),363,376(2)', 'Harassment'),
-        ('assault at ramatahal village in complainant house under section 323,452,149,147,143,504,506,354(B)', 'Assault'),
-        ('fatal vehicle accident at amd hnd sh 20 road near sangameshwar granite facto under section 304(A),337,279,338', 'Assault'),
-        ('theft of property at gudur hanamanal road nilugal cross under section 379, 21,4(1A),4(1)', 'Theft'),
-        ('theft of property at muganur hanuman temple under section 379,511', 'Theft'),
-        ('theft of property at ramathal forest nursury on the road ihole to ramat under section 379, 21,4(1A),4(1)', 'Theft'),
-        ('assault at mullur village complainant house near under section 324,323,149,147,143,504', 'Assault'),
-        ('assault at mullur village complainant land near under section 324,323,149,147,143,504', 'Assault'),
-        ('fatal vehicle accident at kamatagi guledagudda road near makandar land under section 304(A),279', 'Assault'),
-        ('fatal vehicle accident at hunagund aminagad sh-20 road near rakkasagi villag under section 279,283,337,338', 'Assault'),
-        ('theft of property at kelur village siddanakolla math crass near under section 379, 21,4(1A),4(1)', 'Theft'),
-        ('cruelty, verbal abuse and domestic harassment by husband at gudur village complainant house under section 506(2),504,498A', 'Harassment'),
-        ('pocso case, kidnapping and sexual harassment of minor child at tallikeri village complainant house under section 8, 354(A),511,376,354', 'Harassment'),
-        ('theft of two wheeler vehicle at aminagadbus stand near insapecton benlow under section 379', 'Theft'),
-        ('kidnapping and abduction of a person, a person went missing from gudur village mohansa patil petrole pump under section 366', 'Missing Person'),
-        ('theft of property at aminagad pattan pachayati near idea taver under section 379', 'Theft'),
-        ('missing person report, a person went missing from vadageri village victem house', 'Missing Person'),
-        ('fatal vehicle accident at aminagad bagalkot sh-20 road near doddannavar mine under section 279', 'Assault'),
-        ('fatal vehicle accident at amd bgk sh 20 road near taz mahal hotel under section 279', 'Assault'),
-        ('physical assault causing injury at nimbalagund complainant land under section 324,323,504,506', 'Assault'),
-        ('missing person report, a person went missing from muganur village victem house', 'Missing Person'),
-        ('assault at gudur bustand under section 149,143,341,353,283', 'Assault'),
-        ('fatal vehicle accident at amingad bagalkot sh-20 road near tippanna gouda under section 338,337,279,429, 187', 'Assault'),
-
-# THEFT (IPC 379/380)
+# ==========================================
+        # THEFT (IPC 379/380)
         # ==========================================
         ("my mobile phone was stolen from my pocket while boarding the crowded metro train", "Theft"),
         ("someone stole my motorcycle from the office parking lot between 10 AM and 6 PM", "Theft"),
@@ -271,6 +166,168 @@ def train_model():
         ("child disappeared from the residential society play area, kidnap suspected", "Missing Person"),
         ("husband went missing after a business trip landing, last tracked at airport exit", "Missing Person")
     ]
+
+    # 2. Dynamic CSV Dataset Loading (Hybrid approach)
+    import os
+    import csv
+    import pandas as pd
+    import re
+
+    CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+    CSV_PATH = os.path.join(CURRENT_DIR, "crime_data.csv")
+
+    if os.path.exists(CSV_PATH):
+        print(f"[INFO] Found external dataset at {CSV_PATH}. Merging...")
+        try:
+            df = pd.read_csv(CSV_PATH, skipinitialspace=True)
+            
+            # Case A: Raw police CSV columns format (if user drops raw CSV)
+            if "CrimeGroup_Name" in df.columns and "ActSection" in df.columns:
+                print("[INFO] CSV format detected: Raw police records. Cleaning dynamically...")
+                years = {'1860', '1963', '1957', '1973', '1988', '2012', '1950', '1951', '1989', '1965', '2012'}
+
+                def clean_place(place):
+                    if pd.isna(place):
+                        return ''
+                    place = str(place).strip()
+                    parts = [p.strip() for p in place.split(',') if p.strip()]
+                    if parts:
+                        place = parts[0]
+                    place = re.sub(r'\s+', ' ', place)
+                    return place.lower()
+
+                def clean_sections(section_str):
+                    if pd.isna(section_str):
+                        return ''
+                    parts = re.split(r'u/s\s*:', section_str, flags=re.IGNORECASE)
+                    if len(parts) <= 1:
+                        parts = [section_str]
+                    
+                    sections = []
+                    segment_list = parts[1:] if len(parts) > 1 else parts
+                    for part in segment_list:
+                        tokens = part.split()
+                        for token in tokens:
+                            token_clean = token.strip(',.;: ')
+                            if not token_clean:
+                                continue
+                            if not re.search(r'\d', token_clean):
+                                continue
+                            if token_clean in years:
+                                continue
+                            sections.append(token_clean)
+                            
+                    return ', '.join(sections)
+
+                csv_records = []
+                for idx, row in df.iterrows():
+                    group = str(row.get('CrimeGroup_Name', '')).strip().upper()
+                    head = str(row.get('CrimeHead_Name', '')).strip()
+                    section_raw = str(row.get('ActSection', ''))
+                    place_raw = str(row.get('Place of Offence', ''))
+                    
+                    if pd.isna(row.get('CrimeGroup_Name')) and pd.isna(row.get('ActSection')):
+                        continue
+                        
+                    category = None
+                    if any(k in group for k in ['THEFT', 'BURGLARY', 'LARCENY']):
+                        category = 'Theft'
+                    elif any(k in group for k in ['ATTEMPT TO MURDER', 'MURDER', 'HURT', 'RIOTS', 'NEGLIGENT ACT']) or 'MOTOR VEHICLE' in group or 'MOTOR VEHIC' in group:
+                        category = 'Assault'
+                    elif any(k in group for k in ['MOLESTATION', 'POCSO', 'CRUELTY', 'SCHEDULED CASTE']):
+                        category = 'Harassment'
+                    elif any(k in group for k in ['MISSING PERSON', 'KIDNAPPING']):
+                        category = 'Missing Person'
+                    elif any(k in group for k in ['CHEATING', 'FORGERY']):
+                        category = 'Fraud'
+                    elif 'CYBER' in group or 'IT ACT' in group:
+                        category = 'Cybercrime'
+                    
+                    if not category:
+                        if '420' in section_raw or '419' in section_raw:
+                            category = 'Fraud'
+                        elif any(s in section_raw for s in ['379', '380', '457']):
+                            category = 'Theft'
+                        elif any(s in section_raw for s in ['302', '307', '323', '324', '326', '279', '304A', '304(A)']):
+                            category = 'Assault'
+                        elif any(s in section_raw for s in ['354', '498A', '504', '506']):
+                            category = 'Harassment'
+                        elif any(s in section_raw for s in ['363', '366', '00MP']):
+                            category = 'Missing Person'
+
+                    if not category:
+                        continue
+                        
+                    place = clean_place(place_raw)
+                    if place == 'nan' or not place:
+                        place = 'unknown location'
+                    sections = clean_sections(section_raw)
+                    
+                    # Construct description
+                    if category == 'Theft':
+                        action = 'theft of property'
+                        if 'two wheelers' in head.lower() or 'automobile' in head.lower():
+                            action = 'theft of two wheeler vehicle'
+                        elif 'cattle' in head.lower():
+                            action = 'theft of cattle'
+                        elif 'commercial' in head.lower():
+                            action = 'theft at commercial place'
+                        desc = f'{action} at {place} under section {sections}'
+                    elif category == 'Assault':
+                        action = 'assault'
+                        if 'murder' in group.lower():
+                            action = 'murder of a person'
+                        elif 'attempt to murder' in group.lower():
+                            action = 'attempt to murder and physical assault'
+                        elif 'non-fatal' in group.lower() or 'accident' in group.lower() or 'negligent' in group.lower():
+                            action = 'road accident and injury'
+                            if 'fatal' in group.lower():
+                                action = 'fatal vehicle accident'
+                        elif 'hurt' in group.lower():
+                            action = 'physical assault causing injury'
+                        desc = f'{action} at {place} under section {sections}'
+                    elif category == 'Harassment':
+                        action = 'harassment'
+                        if 'cruelty' in group.lower():
+                            action = 'cruelty, verbal abuse and domestic harassment by husband'
+                        elif 'pocso' in group.lower():
+                            action = 'pocso case, kidnapping and sexual harassment of minor child'
+                        elif 'molestation' in group.lower():
+                            action = 'molestation and physical attack of woman'
+                        desc = f'{action} at {place} under section {sections}'
+                    elif category == 'Missing Person':
+                        action = 'missing person report'
+                        if 'kidnap' in group.lower() or '366' in sections:
+                            action = 'kidnapping and abduction of a person'
+                        desc = f'{action}, a person went missing from {place}'
+                        if '366' in sections:
+                            desc += f' under section {sections}'
+                    elif category == 'Fraud':
+                        action = 'financial fraud'
+                        if 'forgery' in group.lower():
+                            action = 'forgery of document and cheating'
+                        desc = f'{action} at {place} under section {sections}'
+                        
+                    csv_records.append((desc, category))
+                
+                print(f"[SUCCESS] Cleaned and merged {len(csv_records)} records from raw CSV.")
+                dataset.extend(csv_records)
+                
+            # Case B: Pre-cleaned text/category format
+            elif "text" in df.columns and "category" in df.columns:
+                print("[INFO] CSV format detected: Pre-cleaned text/category.")
+                csv_records = []
+                for idx, row in df.iterrows():
+                    txt = str(row.get("text", "")).strip()
+                    cat = str(row.get("category", "")).strip()
+                    if txt and cat:
+                        csv_records.append((txt, cat))
+                print(f"[SUCCESS] Merged {len(csv_records)} pre-cleaned records from CSV.")
+                dataset.extend(csv_records)
+            else:
+                print("[WARNING] CSV headers do not match expected formats ('text,category' or raw columns). Skipping.")
+        except Exception as e:
+            print(f"[ERROR] Failed to load external CSV: {e}")
 
     # Split dataset into texts and labels
     texts = [item[0] for item in dataset]
