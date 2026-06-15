@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { getHistory } from "../lib/api";
 import { RefreshCw, Clock, FileText, Activity } from "lucide-react";
 
-export default function History({ onSelectReport, refreshTrigger }) {
+export default function History({ onSelectReport, refreshTrigger, globalTaskActive, setGlobalTaskActive }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [activeIndex, setActiveIndex] = useState(null);
@@ -14,16 +14,19 @@ export default function History({ onSelectReport, refreshTrigger }) {
   const fetchHistory = async () => {
     try {
       setLoading(true);
+      if (setGlobalTaskActive) setGlobalTaskActive(true);
       const res = await getHistory();
       setData(res);
     } catch (err) {
       console.error("Error fetching history:", err);
     } finally {
       setLoading(false);
+      if (setGlobalTaskActive) setGlobalTaskActive(false);
     }
   };
 
   const handleCardClick = (item, index) => {
+    if (globalTaskActive) return;
     setActiveIndex(index);
     if (onSelectReport) {
       onSelectReport(item);
@@ -44,7 +47,7 @@ export default function History({ onSelectReport, refreshTrigger }) {
   };
 
   return (
-    <div className="glass p-6 rounded-3xl border border-slate-800/80 transition-all duration-300 hover:border-slate-700 max-w-7xl mx-auto m-4 md:m-8">
+    <div className={`glass p-6 rounded-3xl border border-slate-800/80 transition-all duration-300 hover:border-slate-700 max-w-7xl mx-auto m-4 md:m-8 ${globalTaskActive ? 'opacity-70 pointer-events-none' : ''}`}>
       
       {/* Title block */}
       <div className="flex justify-between items-center mb-6">
@@ -55,7 +58,7 @@ export default function History({ onSelectReport, refreshTrigger }) {
         
         <button
           onClick={fetchHistory}
-          disabled={loading}
+          disabled={loading || globalTaskActive}
           className="p-2 hover:bg-slate-850 text-slate-400 hover:text-white rounded-xl border border-slate-800/60 transition disabled:opacity-50"
           title="Refresh history log"
         >
@@ -92,7 +95,7 @@ export default function History({ onSelectReport, refreshTrigger }) {
               <div
                 key={item._id || index}
                 onClick={() => handleCardClick(item, index)}
-                className={`p-4 rounded-2xl border transition-all duration-300 cursor-pointer flex flex-col justify-between ${
+                className={`p-4 rounded-2xl border transition-all duration-300 cursor-pointer flex flex-col justify-between rainbow-hover ${
                   isSelected
                     ? "bg-indigo-950/20 border-indigo-500/50 shadow-[0_4px_20px_rgba(99,102,241,0.15)]"
                     : "bg-slate-900/20 border-slate-800/60 hover:bg-slate-900/40 hover:border-slate-700"
@@ -111,7 +114,7 @@ export default function History({ onSelectReport, refreshTrigger }) {
                   </div>
 
                   {/* Body Text */}
-                  <p className="text-xs text-slate-300 font-medium leading-relaxed italic">
+                  <p className="text-xs text-slate-300 font-medium leading-relaxed italic line-clamp-2">
                     "{truncatedSnippet}"
                   </p>
 

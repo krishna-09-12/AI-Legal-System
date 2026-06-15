@@ -6,7 +6,7 @@ import {
   ArrowRight, Activity, Loader2
 } from "lucide-react";
 
-export default function FIRForm({ onNewReport, selectedReport }) {
+export default function FIRForm({ onNewReport, selectedReport, globalTaskActive, setGlobalTaskActive }) {
   const [text, setText] = useState("");
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -137,6 +137,7 @@ export default function FIRForm({ onNewReport, selectedReport }) {
   const handleAudioUpload = async (audioBlob) => {
     try {
       setTranscribing(true);
+      if (setGlobalTaskActive) setGlobalTaskActive(true);
       const transcript = await transcribeAudio(audioBlob);
       if (transcript) {
         // Append or replace text
@@ -147,6 +148,7 @@ export default function FIRForm({ onNewReport, selectedReport }) {
       alert(err.response?.data?.detail || "Speech-to-Text failed. Try typing your complaint manually.");
     } finally {
       setTranscribing(false);
+      if (setGlobalTaskActive) setGlobalTaskActive(false);
     }
   };
 
@@ -160,6 +162,7 @@ export default function FIRForm({ onNewReport, selectedReport }) {
 
     try {
       setLoading(true);
+      if (setGlobalTaskActive) setGlobalTaskActive(true);
       const data = await predictIPC(text);
       setReport(data);
       if (onNewReport) {
@@ -170,6 +173,7 @@ export default function FIRForm({ onNewReport, selectedReport }) {
       alert("Failed to analyze complaint. Please check your backend connection.");
     } finally {
       setLoading(false);
+      if (setGlobalTaskActive) setGlobalTaskActive(false);
     }
   };
 
@@ -191,6 +195,7 @@ export default function FIRForm({ onNewReport, selectedReport }) {
 
     try {
       setAudioLoading(true);
+      if (setGlobalTaskActive) setGlobalTaskActive(true);
       
       // Construct the text content to read aloud
       // Read main category, severity, summary, and action plan items
@@ -215,6 +220,7 @@ export default function FIRForm({ onNewReport, selectedReport }) {
       alert("Failed to synthesize speech. Please try again.");
     } finally {
       setAudioLoading(false);
+      if (setGlobalTaskActive) setGlobalTaskActive(false);
     }
   };
 
@@ -316,7 +322,7 @@ export default function FIRForm({ onNewReport, selectedReport }) {
             <button
               type="button"
               onClick={isRecording ? stopRecording : startRecording}
-              disabled={transcribing || loading}
+              disabled={transcribing || loading || globalTaskActive}
               className={`w-20 h-20 rounded-full flex items-center justify-center transition-all duration-300 relative z-10 ${
                 isRecording 
                   ? "bg-red-500 text-white mic-pulse shadow-[0_0_25px_rgba(239,68,68,0.4)]"
@@ -348,11 +354,12 @@ export default function FIRForm({ onNewReport, selectedReport }) {
               </button>
             </div>
             <textarea
-              className="w-full bg-slate-950/80 border border-slate-800 focus:border-indigo-500 rounded-xl p-4 text-slate-200 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 transition placeholder-slate-600"
+              className="w-full bg-slate-950/80 border border-slate-800 focus:border-indigo-500 rounded-xl p-4 text-slate-200 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 transition placeholder-slate-600 disabled:opacity-50"
               rows="6"
               placeholder="Your transcribed text will appear here. You can also edit it or type manually if you prefer..."
               value={text}
               onChange={(e) => setText(e.target.value)}
+              disabled={globalTaskActive}
             />
           </div>
 
@@ -384,7 +391,7 @@ export default function FIRForm({ onNewReport, selectedReport }) {
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={loading || transcribing || !text.trim()}
+            disabled={loading || transcribing || !text.trim() || globalTaskActive}
             className="w-full py-4 px-6 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl font-bold flex items-center justify-center gap-2 shadow-[0_4px_20px_rgba(99,102,241,0.25)] hover:shadow-[0_4px_25px_rgba(99,102,241,0.35)] transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:pointer-events-none"
           >
             {loading ? (
@@ -406,7 +413,7 @@ export default function FIRForm({ onNewReport, selectedReport }) {
       <div className="lg:col-span-7 space-y-6">
         
         {report ? (
-          <div className={`glass rounded-3xl border p-6 md:p-8 relative overflow-hidden transition-all duration-500 ${severity.glow}`}>
+          <div className={`glass rounded-3xl border p-6 md:p-8 relative overflow-hidden transition-all duration-500 rainbow-hover ${severity.glow}`}>
             
             {/* Header Details */}
             <div className="flex flex-wrap justify-between items-start gap-4 pb-6 border-b border-slate-800/80">
@@ -509,7 +516,7 @@ export default function FIRForm({ onNewReport, selectedReport }) {
                 <button
                   type="button"
                   onClick={handleListenReport}
-                  disabled={audioLoading}
+                  disabled={audioLoading || globalTaskActive}
                   className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-extrabold transition-all duration-300 ${
                     isPlaying 
                       ? "bg-amber-600 hover:bg-amber-500 text-slate-950 shadow-[0_0_15px_rgba(245,158,11,0.2)]" 
